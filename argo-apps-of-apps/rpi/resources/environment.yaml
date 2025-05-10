@@ -38,7 +38,7 @@ spec:
         helm:
             valueFiles:
             - "$configuration/argo-apps-of-apps/rpi/config/global.yaml"
-            - "$configuration/{{.valueFile}}"
+            - "$configuration/argo-apps-of-apps/rpi/config/{{.valueFile}}"
       destination:
         namespace: "argo-cd"
         name: in-cluster
