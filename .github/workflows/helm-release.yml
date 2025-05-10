@@ -2,8 +2,8 @@ name: Release Helm Chart
 
 on:
   push:
-    # paths:
-    #   - 'apps-infra/charts/database/postgres/**'
+    #paths:
+    #  - 'apps-infra/charts/database/postgres/**'
     branches:
       - main
 
@@ -11,7 +11,7 @@ jobs:
   release-chart:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # <--- NECESARIO para que GITHUB_TOKEN pueda hacer push
+      contents: write  # Necesario para hacer push con GITHUB_TOKEN
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git clone --branch gh-pages https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} gh-pages
+          git clone --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages
           cp .output/*.tgz gh-pages/
 
       - name: Update index.yaml and push
