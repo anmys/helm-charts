@@ -3,7 +3,7 @@ name: Release Helm Chart
 on:
   push:
     paths:
-      - 'charts/database/postgres/**'
+      - 'apps-infra/charts/database/postgres/**'
     branches:
       - main
 
@@ -22,7 +22,7 @@ jobs:
       - name: Package Helm chart
         run: |
           mkdir -p .output
-          helm package charts/database/postgres --destination .output
+          helm package apps-infra/charts/database/postgres --destination .output
 
       - name: Clone gh-pages branch
         run: |
