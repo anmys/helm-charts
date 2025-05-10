@@ -1,0 +1,93 @@
+{{- if .Values.postgres.enabled }}
+{{/* Configuración del Clúster */}}
+{{- $namespace := "postgres" -}}
+{{- $project := "default" -}}
+{{- $destinationName := "in-cluster" -}}
+{{- $sizeSSD := "15Gi" -}}
+{{- $sizePVC := "5Gi" -}}
+
+---
+# Configuración de PersistentVolume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-postgresql
+  namespace: postgres
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: {{ $sizeSSD }}
+  accessModes:
+    - ReadWriteMany
+  local:
+    fsType: ""
+    path: /mnt/ssd/app-data/postgresql
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - raspberrypi
+---
+# Configuración de PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-data-postgresql
+  namespace: postgres
+spec:
+  volumeName: pv-data-postgresql
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ $sizePVC }}
+  storageClassName: local-path
+---
+# # Configuración de la aplicación PostgreSQL en ArgoCD
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql-app
+spec:
+  project: {{ $project }}
+  destination:
+    name: {{ $destinationName }}
+    namespace: {{ $namespace }}
+  ignoreDifferences: 
+  - group: "apps"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/replicas
+  source:
+    repoURL: "https://charts.bitnami.com/bitnami"  
+    chart: postgresql  
+    targetRevision: "16.1.2"
+    helm:
+      valuesObject:
+        primary:
+          persistence:
+            enabled: true
+            existingClaim: pvc-data-postgresql
+            storageClass: local-path
+          pgHbaConfiguration: |-
+            # Unix sockets
+            local  all  postgres            trust
+            local  all  all                 peer
+            # IPv4 local connections:
+            host  all  all  127.0.0.1/32    md5
+            host  all  all  192.168.1.2/32  md5
+            host  all  all  10.0.0.0/24     md5
+            # IPv6 local connections:
+            host  all  all   ::1/128        md5
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+{{ end -}}

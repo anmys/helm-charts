@@ -1,1 +1,4 @@
 name: template
+
+postgres:
+  enabled: false
