@@ -73,6 +73,10 @@ spec:
             enabled: true
             existingClaim: pvc-data-postgresql
             storageClass: local-path
+          podSecurityContext:
+            fsGroup: 1001
+          containerSecurityContext:
+            runAsUser: 1001
           pgHbaConfiguration: |-
             # Unix sockets
             local  all  postgres            trust
