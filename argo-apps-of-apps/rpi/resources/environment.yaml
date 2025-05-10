@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: multiple-sources-appset
+  namespace: argo-cd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - name: infrastructure
+            valueFile: infrastructure.yaml
+          - name: dev
+            valueFile: values.dev.yaml
+  template:
+    metadata:
+      name: "{{.name}}-app"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      ignoreDifferences:
+        - group: "apps"
+          kind: "Deployment"
+          jsonPointers:
+            - /spec/replicas
+      sources:
+      # Values 
+      - repoURL: "https://github.com/anmys/helm-charts"
+        targetRevision: HEAD
+        ref: valuesApp
+        path: argo-apps-of-apps/rpi/config
+      # Charts
+      - repoURL: "https://github.com/anmys/helm-charts"
+        targetRevision: HEAD
+        path: apps-infra/argocd-apps
+        helm:
+            valueFiles:
+            - "$valuesApp/global.yaml"
+            - "$valuesApp/{{.valueFile}}"
+      destination:
+        namespace: "argo-cd"
+        name: in-cluster
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        automated:
+          selfHeal: true
+          prune: false
