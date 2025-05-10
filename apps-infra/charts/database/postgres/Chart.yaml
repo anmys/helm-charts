@@ -1,6 +1,6 @@
 apiVersion: v2
 name: postgres
-description: PostgreSQL database deployment custom 
+description: PostgreSQL database deployment
 type: application
 version: 14.0.0
 appVersion: "14.0" 
