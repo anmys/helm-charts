@@ -1,4 +1,4 @@
-{{- if .Values.postgres.enabled }}
+{{- if .Values.enabled }}
 {{/* Configuración del Clúster */}}
 {{- $namespace := "postgres" -}}
 {{- $project := "default" -}}
