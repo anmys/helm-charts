@@ -19,7 +19,7 @@ appVersion: "1.16.0"
 dependencies:
   - name: postgres
     version: 14.0.0
-    repository: file://../charts/database/postgres
+    repository: https://anmys.github.io/helm-charts
     condition: postgres.enabled
     tags:
       - database
