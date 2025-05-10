@@ -11,8 +11,10 @@ spec:
         elements:
           - name: infrastructure
             valueFile: infrastructure.yaml
+            type: apps-infra
           - name: dev
             valueFile: values.dev.yaml
+            type: apps
   template:
     metadata:
       name: "{{.name}}-app"
@@ -34,7 +36,7 @@ spec:
       # Charts
       - repoURL: "https://github.com/anmys/helm-charts"
         targetRevision: HEAD
-        path: apps-infra/argocd-apps
+        path: "{{.type}}/argocd-apps"
         helm:
             valueFiles:
             - "$configuration/argo-apps-of-apps/rpi/config/global.yaml"
