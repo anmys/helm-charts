@@ -29,7 +29,7 @@ spec:
       # Values 
       - repoURL: "https://github.com/anmys/helm-charts"
         targetRevision: HEAD
-        ref: valuesApp
+        ref: configuration
         path: argo-apps-of-apps/rpi/config
       # Charts
       - repoURL: "https://github.com/anmys/helm-charts"
@@ -37,8 +37,8 @@ spec:
         path: apps-infra/argocd-apps
         helm:
             valueFiles:
-            - "$valuesApp/global.yaml"
-            - "$valuesApp/{{.valueFile}}"
+            - "$configuration/argo-apps-of-apps/rpi/config/global.yaml"
+            - "$configuration/{{.valueFile}}"
       destination:
         namespace: "argo-cd"
         name: in-cluster
