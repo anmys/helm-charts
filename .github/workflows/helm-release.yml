@@ -22,7 +22,16 @@ jobs:
       - name: Package Helm chart
         run: |
           mkdir -p .output
-          helm package charts/database/postgres --destination .output
+          helm package apps-infra/charts/database/postgres --destination .output
+      - name: Config page
+        run: |
+          git checkout --orphan gh-pages
+          git rm -rf .
+          touch .nojekyll
+          git add .nojekyll
+          git commit -m "Init gh-pages"
+          git push origin gh-pages
+          git checkout main
 
       - name: Clone gh-pages branch
         run: |
