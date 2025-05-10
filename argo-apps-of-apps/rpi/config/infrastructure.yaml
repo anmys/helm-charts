@@ -1,4 +1,0 @@
-name: infrastructure
-
-postgres:
-  enabled: true
