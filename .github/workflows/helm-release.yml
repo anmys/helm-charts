@@ -35,6 +35,9 @@ jobs:
         run: |
           cd gh-pages
           helm repo index . --url https://${{ github.repository_owner }}.github.io/$(basename ${{ github.repository }})
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git remote set-url origin https://supermavster:${{ secrets.GH _TOKEN }}@github.com/${{ github.repository }} origin
           git add .
           git commit -m "Update chart index for postgres" || echo "No changes to commit"
           git push
