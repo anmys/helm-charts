@@ -1,9 +1,20 @@
 apiVersion: v1
 entries:
+  nextcloud:
+  - apiVersion: v2
+    appVersion: "14.0"
+    created: "2025-05-12T23:15:49.154416494Z"
+    description: nextcloud deployment app
+    digest: 0581d3c05705dd44254bcdc72fd0084ce20c634b0dced580a303c664dab39668
+    name: nextcloud
+    type: application
+    urls:
+    - https://anmys.github.io/helm-charts/nextcloud-14.0.0.tgz
+    version: 14.0.0
   postgres:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:06:11.750458629Z"
+    created: "2025-05-12T23:15:49.154555143Z"
     description: PostgreSQL database deploymenta
     digest: 28ec89c16d608dd2fca054e192eee10422daff9131274dd709c6c515da5c352d
     name: postgres
@@ -14,7 +25,7 @@ entries:
   redis:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:06:11.75059411Z"
+    created: "2025-05-12T23:15:49.154693121Z"
     description: Redis database deploymenta
     digest: 178ec89bb220fb5231616fa42fa0b42789eef990b5edfe89fa9db47248d31d3d
     name: redis
@@ -25,7 +36,7 @@ entries:
   vault:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:06:11.75075044Z"
+    created: "2025-05-12T23:15:49.154829355Z"
     description: vault deployment app
     digest: c41e40fd801eb1141eb99ec36ce4fd470eb3132c46159d8f2a75d3e2b338830d
     name: vault
@@ -33,4 +44,4 @@ entries:
     urls:
     - https://anmys.github.io/helm-charts/vault-14.0.0.tgz
     version: 14.0.0
-generated: "2025-05-12T23:06:11.750170915Z"
+generated: "2025-05-12T23:15:49.154111433Z"
