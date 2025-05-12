@@ -15,18 +15,45 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Need full history to get changed files
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: v3.12.3
 
-      - name: Package Helm chart
+      - name: Find and package changed Helm charts
         run: |
           mkdir -p .output
-          helm package apps-infra/charts/database/postgres --destination .output
+          
+          # Get the list of changed files in the current commit
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^apps-infra/charts/')
+          
+          # Extract the chart directories from changed files
+          CHANGED_CHART_DIRS=$(echo "$CHANGED_FILES" | grep -oE 'apps-infra/charts/[^/]+/[^/]+' | sort -u)
+          
+          if [ -z "$CHANGED_CHART_DIRS" ]; then
+            echo "No chart directories changed in this commit."
+            exit 0
+          fi
+          
+          # Package each changed chart
+          for chart_dir in $CHANGED_CHART_DIRS; do
+            if [ -f "$chart_dir/Chart.yaml" ]; then
+              echo "Packaging changed chart: $chart_dir"
+              helm package $chart_dir --destination .output
+            fi
+          done
+          
+          # Check if any charts were packaged
+          if [ ! "$(ls -A .output)" ]; then
+            echo "No valid charts were packaged. Exiting."
+            exit 0
+          fi
 
       - name: Clone gh-pages branch
+        if: success() && hashFiles('.output/*.tgz') != ''
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
@@ -34,9 +61,10 @@ jobs:
           cp .output/*.tgz gh-pages/
 
       - name: Update index.yaml and push
+        if: success() && hashFiles('.output/*.tgz') != ''
         run: |
           cd gh-pages
           helm repo index . --url https://${{ github.repository_owner }}.github.io/$(basename ${{ github.repository }})
           git add .
-          git commit -m "Update chart index for postgres" || echo "No changes to commit"
+          git commit -m "Update Helm charts index for changed charts" || echo "No changes to commit"
           git push
