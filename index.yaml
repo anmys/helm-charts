@@ -3,12 +3,12 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-10T13:00:00.172342179Z"
+    created: "2025-05-12T03:12:31.150407946Z"
     description: PostgreSQL database deploymenta
-    digest: fa4cc315577f81f3f4b7223eadcc60af38564d2029327d940698024f22b5a921
+    digest: 66457074363e86d01b6d12108f199d06261630bbbd67563ed5d9159473d2c68a
     name: postgres
     type: application
     urls:
     - https://anmys.github.io/helm-charts/postgres-14.0.0.tgz
     version: 14.0.0
-generated: "2025-05-10T13:00:00.172075289Z"
+generated: "2025-05-12T03:12:31.150108736Z"
