@@ -2,3 +2,6 @@ name: infrastructure
 
 postgres:
   enabled: true
+
+vault:
+  enabled: true 
