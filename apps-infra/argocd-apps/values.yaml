@@ -1,2 +1,10 @@
 name: template
 
+postgres:
+  enabled: true
+
+vault:
+  enabled: true
+
+redis:
+  enabled: true

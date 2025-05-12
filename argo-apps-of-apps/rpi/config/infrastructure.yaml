@@ -5,3 +5,7 @@ postgres:
 
 vault:
   enabled: true 
+
+redis:
+  enabled: true
+

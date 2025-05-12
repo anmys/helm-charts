@@ -20,13 +20,18 @@ dependencies:
   - name: postgres
     version: 14.0.0
     repository: https://anmys.github.io/helm-charts
-    # condition: postgres.enabled
+    condition: postgres.enabled
     tags:
       - database
   - name: vault
     version: 14.0.0
     repository: https://anmys.github.io/helm-charts
-    # condition: vault.enabled
+    condition: vault.enabled
     tags:
       - secret
-
+  - name: redis
+    version: 14.0.0
+    repository: https://anmys.github.io/helm-charts
+    condition: redis.enabled
+    tags:
+      - database

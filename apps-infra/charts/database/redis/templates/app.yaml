@@ -1,0 +1,130 @@
+{{- if .Values.enabled }}
+{{/* Configuración del Clúster */}}
+{{- $namespace := "redis" -}}
+{{- $project := "default" -}}
+{{- $destinationName := "in-cluster" -}}
+{{- $sizeSSD := "15Gi" -}}
+{{- $sizePVC := "5Gi" -}}
+---
+# Configuración de PersistentVolume para Master
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-redis-master
+  namespace: redis
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: {{ $sizeSSD }}
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: /mnt/ssd/app-data/redis-master
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - raspberrypi
+---
+# Configuración de PersistentVolume para Replica
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-redis-replica
+  namespace: redis
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: {{ $sizeSSD }}
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: /mnt/ssd/app-data/redis-replica
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - raspberrypi
+---
+# Configuración de PersistentVolumeClaim para Master
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-data-redis-master
+  namespace: redis
+spec:
+  volumeName: pv-data-redis-master
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $sizePVC }}
+  storageClassName: local-path
+---
+# Configuración de PersistentVolumeClaim para Replica
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-data-redis-replica
+  namespace: redis
+spec:
+  volumeName: pv-data-redis-replica
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $sizePVC }}
+  storageClassName: local-path
+---
+# Configuración de la aplicación Redis en ArgoCD
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis-app
+spec:
+  project: {{ $project }}
+  destination:
+    name: {{ $destinationName }}
+    namespace: {{ $namespace }}
+  ignoreDifferences: 
+  - group: "apps"
+    kind: "Deployment"
+    jsonPointers:
+    - /spec/replicas
+  source:
+    repoURL: "https://charts.bitnami.com/bitnami"  
+    chart: redis
+    targetRevision: "20.2.1"
+    helm:
+      valuesObject:
+        architecture: standalone
+        master:
+          podAnnotations:
+            cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+          persistence:
+            enabled: true
+            existingClaim: pvc-data-redis-master
+            storageClass: local-path
+        replica:
+          podAnnotations:
+            cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+          persistence:
+            enabled: true
+            existingClaim: pvc-data-redis-replica
+            storageClass: local-path
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+{{ end -}}
