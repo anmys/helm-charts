@@ -80,13 +80,17 @@ spec:
 
           ingress:
             enabled: true
-            className: nginx
+            className: traefik
             annotations:
               nginx.ingress.kubernetes.io/affinity: cookie
             hosts:
               - host: nextcloud.dmascotte.com
                 paths:
                 - /
+            tls:
+              - hosts:
+                  - nextcloud.dmascotte.com
+                secretName: cert-manager-dmascotte-certificate
 
           nextcloud:
             host: nextcloud.dmascotte.com
@@ -111,27 +115,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nextcloud-ingress
-  namespace: {{ $namespace }}
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: nextcloud.dmascotte.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: nextcloud-app
-                port:
-                  number: 8080
-  tls:
-    - hosts:
-        - nextcloud.dmascotte.com
-      secretName: cert-manager-dmascotte-certificate
 {{ end -}}
