@@ -3,7 +3,7 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T22:52:24.26425625Z"
+    created: "2025-05-12T23:02:41.268741072Z"
     description: PostgreSQL database deploymenta
     digest: 28ec89c16d608dd2fca054e192eee10422daff9131274dd709c6c515da5c352d
     name: postgres
@@ -11,10 +11,21 @@ entries:
     urls:
     - https://anmys.github.io/helm-charts/postgres-14.0.0.tgz
     version: 14.0.0
+  redis:
+  - apiVersion: v2
+    appVersion: "14.0"
+    created: "2025-05-12T23:02:41.268905969Z"
+    description: Redis database deploymenta
+    digest: a6ef910c2ca5323070bb192f058abcf721b554dbcbb3df53b934b68ffc24b3d8
+    name: redis
+    type: application
+    urls:
+    - https://anmys.github.io/helm-charts/redis-14.0.0.tgz
+    version: 14.0.0
   vault:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T22:52:24.264432291Z"
+    created: "2025-05-12T23:02:41.269075164Z"
     description: vault deployment app
     digest: c41e40fd801eb1141eb99ec36ce4fd470eb3132c46159d8f2a75d3e2b338830d
     name: vault
@@ -22,4 +33,4 @@ entries:
     urls:
     - https://anmys.github.io/helm-charts/vault-14.0.0.tgz
     version: 14.0.0
-generated: "2025-05-12T22:52:24.263976605Z"
+generated: "2025-05-12T23:02:41.268453648Z"
