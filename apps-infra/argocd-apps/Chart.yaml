@@ -23,3 +23,10 @@ dependencies:
     # condition: postgres.enabled
     tags:
       - database
+  - name: vault
+    version: 14.0.0
+    repository: https://anmys.github.io/helm-charts
+    # condition: vault.enabled
+    tags:
+      - secret
+
