@@ -1,0 +1,29 @@
+{{- if .Values.adguard.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: adguard
+  namespace: argo-cd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: {{ .Values.global.repoURL }}
+    targetRevision: {{ .Values.global.targetRevision }}
+    path: apps-infra/charts/networking/adguard
+    helm:
+      values: |
+        {{- with .Values.adguard }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  destination:
+    server: {{ .Values.global.destinationServer }}
+    namespace: networking
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }} 

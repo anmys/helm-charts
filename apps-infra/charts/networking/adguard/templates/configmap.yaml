@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "adguard.fullname" . }}-config
+  labels:
+    {{- include "adguard.labels" . | nindent 4 }}
+data:
+  {{- with .Values.config }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }} 

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "adguard.fullname" . }}
+  labels:
+    {{- include "adguard.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "adguard.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "adguard.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "adguard.fullname" . }}
+      {{- end }}
+      containers:
+        - name: adguard
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: https
+              containerPort: {{ .Values.service.httpsPort | default 443 }}
+              protocol: TCP
+            - name: admin
+              containerPort: {{ .Values.service.webPort | default 80 }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "adguard.fullname" . }}-env
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: adguard-data
+              mountPath: /opt/adguardhome/work
+            - name: adguard-config
+              mountPath: /opt/adguardhome/conf
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: adguard-data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "adguard.fullname" . }}-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: adguard-config
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "adguard.fullname" . }}-config
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

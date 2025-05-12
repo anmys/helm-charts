@@ -1,0 +1,6 @@
+apiVersion: v2
+name: adguard
+description: adguard deployment app
+type: application
+version: 14.0.0
+appVersion: "14.0" 

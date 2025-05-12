@@ -11,3 +11,27 @@ redis:
 
 nextcloud:
   enabled: true
+
+adguard:
+  enabled: true
+  # config for raspberry pi (192.168.1.2)
+  config:
+    adguard:
+      host: adguard.dmascotte.com
+      username: admin
+      password: admin
+  ingress:
+    enabled: true
+    className: "traefik"
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: adguard.dmascotte.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: adguard-tls
+        hosts:
+          - adguard.dmascotte.com
