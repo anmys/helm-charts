@@ -1,0 +1,137 @@
+{{- if .Values.enabled }}
+{{/* Configuración del Clúster */}}
+{{- $namespace := "nextcloud" -}}
+{{- $project := "default" -}}
+{{- $destinationName := "in-cluster" -}}
+{{- $sizeSSD := "15Gi" -}}
+{{- $sizePVC := "5Gi" -}}
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $namespace }}
+---
+# Configuración de PersistentVolume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-nextcloud
+  namespace: {{ $namespace }}
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: {{ $sizeSSD }}
+  accessModes:
+    - ReadWriteMany
+  local:
+    fsType: ""
+    path: /mnt/ssd/app-data/nextcloud
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - raspberrypi
+---
+# Configuración de PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-data-nextcloud
+  namespace: {{ $namespace }}
+spec:
+  volumeName: pv-data-nextcloud
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ $sizePVC }}
+  storageClassName: local-path
+---
+# # Configuración de la aplicación PostgreSQL en ArgoCD
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nextcloud-app
+spec:
+  project: {{ $project }}
+  destination:
+    name: {{ $destinationName }}
+    namespace: {{ $namespace }}
+  sources:
+    - repoURL: 'https://nextcloud.github.io/helm/'
+      chart: nextcloud
+      targetRevision: "6.2.2"
+      helm:
+        valuesObject:
+          # service:
+          #  type: LoadBalancer
+          #  port: 8080
+          #  loadBalancerIP: 192.168.1.2
+
+          livenessProbe:
+            enabled: false
+          readinessProbe:
+            enabled: false
+
+          ingress:
+            enabled: true
+            className: nginx
+            annotations:
+              nginx.ingress.kubernetes.io/affinity: cookie
+            hosts:
+              - host: nextcloud.dmascotte.com
+                paths:
+                - /
+
+          nextcloud:
+            host: nextcloud.dmascotte.com
+            username: nextcloud
+            password: nextcloud
+          startupProbe:
+            enabled: true
+            initialDelaySeconds: 120
+          persistence:
+            enabled: true
+            existingClaim: pvc-data-nextcloud
+            storageClass: local-path
+          externalDatabase:
+            enabled: true
+            type: postgres
+            host: postgresql-app.postgres.svc.cluster.local:5432
+            password: nextcloud
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud-ingress
+  namespace: {{ $namespace }}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: nextcloud.dmascotte.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nextcloud-app
+                port:
+                  number: 8080
+  tls:
+    - hosts:
+        - nextcloud.dmascotte.com
+      secretName: cert-manager-dmascotte-certificate
+{{ end -}}

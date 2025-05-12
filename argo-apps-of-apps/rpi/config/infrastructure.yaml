@@ -9,3 +9,5 @@ vault:
 redis:
   enabled: true
 
+nextcloud:
+  enabled: true
