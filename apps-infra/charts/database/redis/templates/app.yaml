@@ -6,6 +6,12 @@
 {{- $sizeSSD := "15Gi" -}}
 {{- $sizePVC := "5Gi" -}}
 ---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $namespace }}
+---
 # Configuración de PersistentVolume para Master
 apiVersion: v1
 kind: PersistentVolume
