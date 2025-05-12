@@ -11,3 +11,6 @@ redis:
 
 nextcloud:
   enabled: true
+
+adguard:
+  enabled: true
