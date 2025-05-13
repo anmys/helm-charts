@@ -91,14 +91,7 @@ spec:
           config:
             enabled: true
             existingClaim: data-adguard-home
-          
-        configmap:
-          config:
-            enabled: true
-            name: adguard-initial-config
-            mountPath: /opt/adguardhome/conf
-            defaultMode: 0644
-        
+
         {{- if .Values.service }}
         service:
           {{- toYaml .Values.service | nindent 10 }}
