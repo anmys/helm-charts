@@ -41,9 +41,10 @@ resources:
     memory: 512Mi
 
 # Network configuration
-# service:
-#   main:
-#     type: ClusterIP
+service:
+  main:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
 #     ports:
 #       http:
 #         port: 80
