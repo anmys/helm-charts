@@ -42,7 +42,7 @@ dependencies:
     tags:
       - storage
   - name: adguard
-    version: 14.0.0
+    version: 1.0.0
     repository: https://anmys.github.io/helm-charts
     condition: adguard.enabled
     tags:
