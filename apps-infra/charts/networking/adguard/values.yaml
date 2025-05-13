@@ -39,3 +39,22 @@ resources:
     cpu: 100m
   limits:
     memory: 512Mi
+
+# Network configuration
+service:
+  main:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
+    ports:
+      http:
+        port: 80
+      https:
+        port: 443
+      dns:
+        enabled: true
+        port: 53
+        protocol: UDP
+      dns-tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
