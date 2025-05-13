@@ -38,7 +38,7 @@ persistence:
   accessMode: ReadWriteOnce
   size: 1Gi
   configSize: 100Mi
-  # storageClass: "-"
+  storageClass: "standard"  # Default storage class
 
 resources:
   limits:

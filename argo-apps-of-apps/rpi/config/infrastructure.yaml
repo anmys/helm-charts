@@ -15,23 +15,44 @@ nextcloud:
 adguard:
   enabled: true
   # config for raspberry pi (192.168.1.2)
-  config:
-    adguard:
-      host: adguard.dmascotte.com
-      username: admin
-      password: admin
+  service:
+    type: ClusterIP
+    webPort: 80
+    httpsPort: 443
+    
   ingress:
     enabled: true
     className: "traefik"
     annotations:
       kubernetes.io/ingress.class: traefik
-      kubernetes.io/tls-acme: "true"
     hosts:
       - host: adguard.dmascotte.com
         paths:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: adguard-tls
+      - secretName: cert-manager-dmascotte-certificate
         hosts:
           - adguard.dmascotte.com
+  
+  persistence:
+    enabled: true
+    storageClass: "standard"
+
+  config:
+    adguard:
+      host: adguard.dmascotte.com
+      username: admin
+      password: admin
+    dns:
+      bind_hosts:
+        - 0.0.0.0
+      bootstrap_dns:
+        - 1.1.1.1
+        - 8.8.8.8
+      protection_enabled: true
+      blocking_mode: default
+      filters_update_interval: 24
+    web:
+      bind_host: 0.0.0.0
+      port: 80

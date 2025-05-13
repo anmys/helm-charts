@@ -37,9 +37,11 @@ spec:
             - name: admin
               containerPort: {{ .Values.service.webPort | default 80 }}
               protocol: TCP
-          envFrom:
-            - configMapRef:
-                name: {{ include "adguard.fullname" . }}-env
+          env:
+            - name: RASPBERRY_PI_IP
+              value: "192.168.1.2"
+            - name: ADGUARD_DOMAIN
+              value: {{ .Values.config.adguard.host | quote }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -49,6 +51,9 @@ spec:
               mountPath: /opt/adguardhome/work
             - name: adguard-config
               mountPath: /opt/adguardhome/conf
+            - name: config-volume
+              mountPath: /opt/adguardhome/conf/config
+              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -68,3 +73,6 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        - name: config-volume
+          configMap:
+            name: {{ include "adguard.fullname" . }}-config

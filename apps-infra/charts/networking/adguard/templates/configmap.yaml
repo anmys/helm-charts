@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "adguard.labels" . | nindent 4 }}
 data:
-  {{- with .Values.config }}
-  {{- toYaml . | nindent 2 }}
+  {{- if .Values.config }}
+  adguard-config.yaml: |
+    {{- toYaml .Values.config | nindent 4 }}
   {{- end }} 
