@@ -45,15 +45,9 @@ service:
   main:
     type: LoadBalancer
     loadBalancerIP: 192.168.1.2
-    # annotations:
-    #   metallb.universe.tf/address-shared: "true"
   dns-tcp:
     type: LoadBalancer
     loadBalancerIP: 192.168.1.2
-    # annotations:
-    #   metallb.universe.tf/address-shared: "true"
   dns-udp:
     type: LoadBalancer
     loadBalancerIP: 192.168.1.2
-    # annotations:
-    #   metallb.universe.tf/address-shared: "true"
