@@ -42,18 +42,29 @@ resources:
 
 # Network configuration
 service:
-#   main:
-#     type: LoadBalancer
-#     loadBalancerIP: 192.168.1.2
+  main:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
+    externalTrafficPolicy: Local
+    annotations:
+      metallb.universe.tf/address-pool: metallb-ip-pool
+    ports:
+      http:
+        enabled: true
+        port: 3000
+        protocol: TCP
+        targetPort: 3000
+      dns-tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
+        targetPort: 53
+      dns-udp:
+        enabled: true
+        port: 53
+        protocol: UDP
+        targetPort: 53
   dns-tcp:
-    type: LoadBalancer
-    loadBalancerIP: 192.168.1.2
-    externalTrafficPolicy: Local
-    annotations:
-      metallb.universe.tf/address-pool: metallb-ip-pool
+    enabled: false
   dns-udp:
-    type: LoadBalancer
-    loadBalancerIP: 192.168.1.2
-    externalTrafficPolicy: Local
-    annotations:
-      metallb.universe.tf/address-pool: metallb-ip-pool
+    enabled: false
