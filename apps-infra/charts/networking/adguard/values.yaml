@@ -26,7 +26,7 @@ persistence:
 
 # Ingress configuration
 ingress:
-  enabled: false
+  enabled: true
   class: traefik
   host: adguard.dmascotte.com
   tls: true
