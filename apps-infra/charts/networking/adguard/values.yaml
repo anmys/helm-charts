@@ -41,13 +41,15 @@ resources:
     memory: 512Mi
 
 # Network configuration
-# service:
+service:
 #   main:
 #     type: LoadBalancer
 #     loadBalancerIP: 192.168.1.2
-#   dns-tcp:
-#     type: LoadBalancer
-#     loadBalancerIP: 192.168.1.2
-#   dns-udp:
-#     type: LoadBalancer
-#     loadBalancerIP: 192.168.1.2
+  dns-tcp:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
+    externalTrafficPolicy: Local
+  dns-udp:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
+    externalTrafficPolicy: Local
