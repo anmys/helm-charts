@@ -3,9 +3,9 @@ entries:
   adguard:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:57:15.652717233Z"
+    created: "2025-05-13T00:02:20.260486991Z"
     description: adguard deployment app
-    digest: a9ca11f28a304f72d3749edd0314215472ad2a98ac53b4c191a55b27081193ec
+    digest: 5f82c8b460feeb097c83e92e505c89f66e398f4375b76ddcdf940d66b5c56902
     name: adguard
     type: application
     urls:
@@ -14,7 +14,7 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:57:15.652862945Z"
+    created: "2025-05-13T00:02:20.260629507Z"
     description: nextcloud deployment app
     digest: 35a31f12f3ae8daeec83607aae9d0bb7de72e9e6ca280849109eeee97a056057
     name: nextcloud
@@ -25,7 +25,7 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:57:15.653000202Z"
+    created: "2025-05-13T00:02:20.260759319Z"
     description: PostgreSQL database deploymenta
     digest: 28ec89c16d608dd2fca054e192eee10422daff9131274dd709c6c515da5c352d
     name: postgres
@@ -36,7 +36,7 @@ entries:
   redis:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:57:15.653121359Z"
+    created: "2025-05-13T00:02:20.260899972Z"
     description: Redis database deploymenta
     digest: 178ec89bb220fb5231616fa42fa0b42789eef990b5edfe89fa9db47248d31d3d
     name: redis
@@ -47,7 +47,7 @@ entries:
   vault:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-12T23:57:15.653289914Z"
+    created: "2025-05-13T00:02:20.261035234Z"
     description: vault deployment app
     digest: c41e40fd801eb1141eb99ec36ce4fd470eb3132c46159d8f2a75d3e2b338830d
     name: vault
@@ -55,4 +55,4 @@ entries:
     urls:
     - https://anmys.github.io/helm-charts/vault-14.0.0.tgz
     version: 14.0.0
-generated: "2025-05-12T23:57:15.652188383Z"
+generated: "2025-05-13T00:02:20.259938166Z"
