@@ -41,7 +41,17 @@ resources:
     memory: 512Mi
 
 # Network configuration
-service:
-  main:
-    type: LoadBalancer
-    loadBalancerIP: 192.168.1.3
+# service:
+#   main:
+#     type: ClusterIP
+#     ports:
+#       http:
+#         port: 80
+#       dns-tcp:
+#         enabled: true
+#         port: 53
+#         protocol: TCP
+#       dns-udp:
+#         enabled: true
+#         port: 53
+#         protocol: UDP
