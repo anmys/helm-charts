@@ -1,6 +1,9 @@
 apiVersion: v2
 name: adguard
-description: adguard deployment app
+description: AdGuard Home is a network-wide software for blocking ads and tracking
 type: application
-version: 14.0.0
-appVersion: "14.0" 
+version: 1.0.0
+appVersion: "latest"
+maintainers:
+  - name: dmascotte
+    email: user@example.com 

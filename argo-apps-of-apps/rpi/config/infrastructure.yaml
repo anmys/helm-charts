@@ -37,7 +37,14 @@ adguard:
   
   persistence:
     enabled: true
-    storageClass: "standard"
+    storageClass: local-path
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    configSize: 100Mi
+  
+  # Ensure AdGuard runs on the Raspberry Pi
+  nodeSelector:
+    kubernetes.io/hostname: raspberrypi
 
   config:
     adguard:

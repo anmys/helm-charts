@@ -1,78 +1,122 @@
-apiVersion: apps/v1
-kind: Deployment
+{{- if .Values.enabled }}
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
 metadata:
-  name: {{ include "adguard.fullname" . }}
-  labels:
-    {{- include "adguard.labels" . | nindent 4 }}
+  name: {{ .Values.namespace | default "adguard" }}
+---
+# Persistent Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-adguard-home
+  namespace: {{ .Values.namespace | default "adguard" }}
 spec:
-  replicas: {{ .Values.replicaCount | default 1 }}
-  selector:
-    matchLabels:
-      {{- include "adguard.selectorLabels" . | nindent 6 }}
-  template:
-    metadata:
-      labels:
-        {{- include "adguard.selectorLabels" . | nindent 8 }}
-    spec:
-      {{- if .Values.serviceAccount.create }}
-      serviceAccountName: {{ include "adguard.fullname" . }}
-      {{- end }}
-      containers:
-        - name: adguard
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
-          ports:
-            - name: http
-              containerPort: 3000
-              protocol: TCP
-            - name: dns-tcp
-              containerPort: 53
-              protocol: TCP
-            - name: dns-udp
-              containerPort: 53
-              protocol: UDP
-            - name: https
-              containerPort: {{ .Values.service.httpsPort | default 443 }}
-              protocol: TCP
-            - name: admin
-              containerPort: {{ .Values.service.webPort | default 80 }}
-              protocol: TCP
-          env:
-            - name: RASPBERRY_PI_IP
-              value: "192.168.1.2"
-            - name: ADGUARD_DOMAIN
-              value: {{ .Values.config.adguard.host | quote }}
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: adguard-data
-              mountPath: /opt/adguardhome/work
-            - name: adguard-config
-              mountPath: /opt/adguardhome/conf
-            - name: config-volume
-              mountPath: /opt/adguardhome/conf/config
-              readOnly: true
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      volumes:
-        - name: adguard-data
-          {{- if .Values.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ include "adguard.fullname" . }}-data
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
-        - name: adguard-config
-          {{- if .Values.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ include "adguard.fullname" . }}-config
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
-        - name: config-volume
-          configMap:
-            name: {{ include "adguard.fullname" . }}-config
+  storageClassName: local-path
+  capacity:
+    storage: {{ .Values.persistence.size | default "1Gi" }}
+  accessModes:
+    - ReadWriteMany
+  local:
+    fsType: ""
+    path: /mnt/ssd/app-data/adguard-home
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - {{ .Values.persistence.nodeAffinity | default "raspberrypi" }}
+---
+# Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-adguard-home
+  namespace: {{ .Values.namespace | default "adguard" }}
+spec:
+  volumeName: pv-data-adguard-home
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | default "1Gi" }}
+  storageClassName: local-path
+---
+# AdGuard Home Application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: adguard-home-app
+spec:
+  project: {{ .Values.argocd.project | default "default" }}
+  destination:
+    name: {{ .Values.argocd.destinationName | default "in-cluster" }}
+    namespace: {{ .Values.namespace | default "adguard" }}
+  source:
+    repoURL: {{ .Values.argocd.repoURL | default "https://k8s-at-home.com/charts/" }}
+    chart: adguard-home
+    targetRevision: {{ .Values.argocd.targetRevision | default "5.5.2" }}
+    helm:
+      valuesObject:
+        image:
+          repository: {{ .Values.image.repository | default "adguard/adguardhome" }}
+          tag: {{ .Values.image.tag | default "latest" }}
+          pullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        
+        env:
+          TZ: {{ .Values.timezone | default "UTC" }}
+        
+        service:
+          main:
+            ports:
+              http:
+                port: 3000
+              dns-tcp:
+                enabled: true
+                port: 53
+                protocol: TCP
+              dns-udp:
+                enabled: true
+                port: 53
+                protocol: UDP
+            
+        ingress:
+          main:
+            enabled: {{ .Values.ingress.enabled | default false }}
+            annotations:
+              kubernetes.io/ingress.class: {{ .Values.ingress.class | default "traefik" }}
+            hosts:
+              - host: {{ .Values.ingress.host | default "adguard.local" }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+            {{- if .Values.ingress.tls }}
+            tls:
+              - secretName: {{ .Values.ingress.tlsSecretName | default "adguard-tls" }}
+                hosts:
+                  - {{ .Values.ingress.host | default "adguard.local" }}
+            {{- end }}
+            
+        persistence:
+          config:
+            enabled: true
+            existingClaim: data-adguard-home
+            
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory | default "128Mi" }}
+            cpu: {{ .Values.resources.requests.cpu | default "100m" }}
+          limits:
+            memory: {{ .Values.resources.limits.memory | default "512Mi" }}
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{ end }}

@@ -1,70 +1,41 @@
-# Default values for AdGuard Home
-replicaCount: 1
+enabled: false
 
+# Namespace for the AdGuard Home deployment
+namespace: adguard
+
+# ArgoCD configuration
+argocd:
+  project: default
+  destinationName: in-cluster
+  repoURL: https://k8s-at-home.com/charts/
+  targetRevision: 5.5.2
+
+# Image configuration
 image:
   repository: adguard/adguardhome
-  tag: ""
+  tag: latest
   pullPolicy: IfNotPresent
 
-nameOverride: ""
-fullnameOverride: ""
+# Timezone configuration
+timezone: UTC
 
-serviceAccount:
-  create: true
-  annotations: {}
+# Persistence configuration
+persistence:
+  size: 1Gi
+  nodeAffinity: raspberrypi
 
-service:
-  type: ClusterIP
-  webPort: 80
-  httpsPort: 443
-
+# Ingress configuration
 ingress:
   enabled: true
-  className: "traefik"
-  annotations:
-    kubernetes.io/ingress.class: traefik
-  hosts:
-    - host: adguard.dmascotte.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: cert-manager-dmascotte-certificate
-      hosts:
-        - adguard.dmascotte.com
+  class: traefik
+  host: adguard.dmascotte.com
+  tls: true
+  tlsSecretName: cert-manager-dmascotte-certificate
 
-persistence:
-  enabled: true
-  accessMode: ReadWriteOnce
-  size: 1Gi
-  configSize: 100Mi
-  storageClass: "standard"  # Default storage class
-
+# Resource constraints
 resources:
-  limits:
-    cpu: 200m
-    memory: 256Mi
   requests:
-    cpu: 100m
     memory: 128Mi
-
-nodeSelector: {}
-
-# Default configuration values based on infrastructure.yaml
-config:
-  adguard:
-    host: adguard.dmascotte.com
-    username: admin
-    password: admin
-  dns:
-    bind_hosts:
-      - 0.0.0.0
-    bootstrap_dns:
-      - 1.1.1.1
-      - 8.8.8.8
-    protection_enabled: true
-    blocking_mode: default
-    filters_update_interval: 24
-  web:
-    bind_host: 0.0.0.0
-    port: 80
+    cpu: 100m
+  limits:
+    memory: 512Mi
