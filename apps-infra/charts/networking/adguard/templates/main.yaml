@@ -69,7 +69,9 @@ spec:
         
         env:
           TZ: {{ .Values.timezone | default "UTC" }}
-            
+        annotations:
+          metallb.universe.tf/allow-shared-ip: adguard-shared
+    
         ingress:
           main:
             enabled: {{ .Values.ingress.enabled | default false }}
