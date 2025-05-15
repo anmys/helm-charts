@@ -24,6 +24,8 @@ adguard:
       metallb.universe.tf/address-pool: metallb-ip-pool
     ports:
       http:
+        enabled: false
+      web:
         enabled: true
         port: 3000
         protocol: TCP
