@@ -14,6 +14,8 @@ nextcloud:
 
 adguard:
   enabled: true
+  controller:
+    replicas: 3
   service:
    main:
     type: LoadBalancer
