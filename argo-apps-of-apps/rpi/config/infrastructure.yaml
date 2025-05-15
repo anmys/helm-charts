@@ -24,10 +24,10 @@ adguard:
     # internalTrafficPolicy: Local # Cluster
     annotations:
       metallb.universe.tf/address-pool: metallb-ip-pool
+      main:
+    primary: true
     ports:
       http:
-        enabled: false
-      web:
         enabled: true
         port: 3000
         protocol: TCP
