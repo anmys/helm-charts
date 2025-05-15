@@ -1,10 +1,10 @@
 name: infrastructure
 
+vault:
+  enabled: true
+  
 postgres:
   enabled: false
-
-vault:
-  enabled: false 
 
 redis:
   enabled: false
