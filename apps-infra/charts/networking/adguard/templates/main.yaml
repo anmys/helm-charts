@@ -62,6 +62,8 @@ spec:
     targetRevision: {{ .Values.argocd.targetRevision | default "5.5.2" }}
     helm:
       valuesObject:
+        controller:
+          replicas: {{ .Values.controller.replicas | default "1" }}
         image:
           repository: {{ .Values.image.repository | default "adguard/adguardhome" }}
           tag: {{ .Values.image.tag | default "latest" }}
