@@ -14,5 +14,8 @@ nextcloud:
 
 adguard:
   enabled: true
+  service:
+    main:
+      enabled: false
   ingress:
     enabled: true
