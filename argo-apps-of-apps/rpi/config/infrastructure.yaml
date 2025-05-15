@@ -42,4 +42,4 @@ adguard:
    dns-udp:
     enabled: false
   ingress:
-    enabled: true
+    enabled: false
