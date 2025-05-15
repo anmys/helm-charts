@@ -13,4 +13,4 @@ nextcloud:
   enabled: false
 
 adguard:
-  enabled: false
+  enabled: true
