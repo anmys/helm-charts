@@ -25,12 +25,12 @@ persistence:
   nodeAffinity: raspberrypi
 
 # Ingress configuration
-ingress:
-  enabled: false
-  class: traefik
-  host: adguard.dmascotte.com
-  tls: true
-  tlsSecretName: cert-manager-dmascotte-certificate
+# ingress:
+#   enabled: false
+#   class: traefik
+#   host: adguard.dmascotte.com
+#   tls: true
+#   tlsSecretName: cert-manager-dmascotte-certificate
 
 # Resource constraints
 resources:
