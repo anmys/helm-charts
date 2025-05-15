@@ -1,16 +1,16 @@
 name: infrastructure
 
-postgres:
-  enabled: true
-
 vault:
-  enabled: true 
+  enabled: true
+  
+postgres:
+  enabled: false
 
 redis:
-  enabled: true
+  enabled: false
 
 nextcloud:
-  enabled: true
+  enabled: false
 
 adguard:
-  enabled: true
+  enabled: false
