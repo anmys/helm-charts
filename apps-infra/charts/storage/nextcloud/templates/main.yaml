@@ -83,6 +83,7 @@ spec:
             className: traefik
             annotations:
               nginx.ingress.kubernetes.io/affinity: cookie
+              cert-manager.io/cluster-issuer: dmascotte-issuer
             hosts:
               - host: nextcloud.dmascotte.com
                 paths:
@@ -90,7 +91,7 @@ spec:
             tls:
               - hosts:
                   - nextcloud.dmascotte.com
-                secretName: cert-manager-dmascotte-certificate
+                secretName: dmascotte-certificate
 
           nextcloud:
             host: nextcloud.dmascotte.com
