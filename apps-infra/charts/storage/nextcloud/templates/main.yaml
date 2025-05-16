@@ -85,7 +85,6 @@ spec:
               nginx.ingress.kubernetes.io/affinity: cookie
               cert-manager.io/cluster-issuer: dmascotte-issuer
               traefik.ingress.kubernetes.io/router.tls: "true"
-              traefik.ingress.kubernetes.io/router.tls.certresolver: dmascotte-issuer
             hosts:
               - host: nextcloud.dmascotte.com
                 paths:
