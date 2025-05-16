@@ -15,7 +15,13 @@ nextcloud:
 adguard:
   enabled: true
   controller:
-    replicas: 3
+    replicas: 1
+  resources:
+    requests:
+      memory: 680Mi
+      cpu: 200m
+    limits:
+      memory: 1Gi
   service:
    main:
     type: LoadBalancer
