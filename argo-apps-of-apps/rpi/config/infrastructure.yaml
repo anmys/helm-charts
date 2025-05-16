@@ -30,7 +30,7 @@ adguard:
     # internalTrafficPolicy: Local # Cluster
     annotations:
       metallb.universe.tf/address-pool: metallb-ip-pool
-      main:
+      metallb.universe.tf/sharing-key: "shared-ip"
     primary: true
     ports:
       http:
