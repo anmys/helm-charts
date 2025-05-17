@@ -1,1 +1,5 @@
 enabled: false 
+
+# create database nextcloud;
+# create user nextcloud with encrypted password 'nextcloud';
+# grant all privileges on database nextcloud to nextcloud;

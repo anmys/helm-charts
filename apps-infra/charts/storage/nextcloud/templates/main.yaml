@@ -109,6 +109,8 @@ spec:
             type: postgres
             host: postgresql-app.postgres.svc.cluster.local:5432
             password: nextcloud
+            username: nextcloud
+            database: nextcloud
   syncPolicy:
     automated:
       prune: true
