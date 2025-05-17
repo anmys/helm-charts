@@ -141,19 +141,22 @@ spec:
               redis.config.php: |-
                 <?php
                 $CONFIG = array (
-                  'memcache.locking' => '\\OC\\Memcache\\Redis',
+                  'memcache.locking' => '\OC\Memcache\Redis',
                   'redis' => array(
                     'host' => 'redis-master.redis.svc.cluster.local',
                     'port' => 6379,
                   ),
                 );
+            # Disable default Redis config to avoid conflict
+            defaultConfigs:
+              redis.config.php: false
             # Add post-install hooks to run maintenance commands
             hooks:
               postStartCommand: |-
                 echo "Running post-start commands...";
                 php occ maintenance:repair --include-expensive;
                 php occ db:add-missing-indices;
-                php occ db:convert-type --all-apps mysql nextcloud nextcloud nextcloud-db.nextcloud.svc.cluster.local;
+                php occ db:convert-type --all-apps pgsql nextcloud nextcloud postgresql-app.postgres.svc.cluster.local;
           startupProbe:
             enabled: true
             initialDelaySeconds: 120
@@ -167,7 +170,6 @@ spec:
             host: postgresql-app.postgres.svc.cluster.local:5432
             password: nextcloud
             username: nextcloud
-            database: nextcloud
   syncPolicy:
     automated:
       prune: true
