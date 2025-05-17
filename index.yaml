@@ -3,7 +3,7 @@ entries:
   adguard:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-17T14:24:36.149455147Z"
+    created: "2025-05-17T14:44:42.975118025Z"
     description: adguard deployment app
     digest: 5f82c8b460feeb097c83e92e505c89f66e398f4375b76ddcdf940d66b5c56902
     name: adguard
@@ -13,7 +13,7 @@ entries:
     version: 14.0.0
   - apiVersion: v2
     appVersion: latest
-    created: "2025-05-17T14:24:36.14905472Z"
+    created: "2025-05-17T14:44:42.974723459Z"
     description: AdGuard Home is a network-wide software for blocking ads and tracking
     digest: 0f9d971b5f9a95fd4e2d49cf7bb633073a2450969de2452dbb9e1e6c35c91894
     maintainers:
@@ -27,9 +27,9 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-17T14:24:36.149600168Z"
+    created: "2025-05-17T14:44:42.975279506Z"
     description: nextcloud deployment app
-    digest: 65a1aff7d6d09d68e5f9c54b38f77d5c14ce95f4f39fc9b56da0564f92c284db
+    digest: 5c00ae4be8bf82a3707bc611c4526d2237affa63b53309ea72fd51606a1e2733
     name: nextcloud
     type: application
     urls:
@@ -38,7 +38,7 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-17T14:24:36.149733127Z"
+    created: "2025-05-17T14:44:42.975433363Z"
     description: PostgreSQL database deploymenta
     digest: b9dc70d68921fb9ca0e2c63a06b65e14c8fad7d4252a96d2a194d1a34921957a
     name: postgres
@@ -49,7 +49,7 @@ entries:
   redis:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-17T14:24:36.149870113Z"
+    created: "2025-05-17T14:44:42.975562063Z"
     description: Redis database deploymenta
     digest: 178ec89bb220fb5231616fa42fa0b42789eef990b5edfe89fa9db47248d31d3d
     name: redis
@@ -60,7 +60,7 @@ entries:
   vault:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-17T14:24:36.150033518Z"
+    created: "2025-05-17T14:44:42.975703256Z"
     description: vault deployment app
     digest: 20a98b0e8fe5105111280bd710f409ecf33110e7461aef51c0b50d44995fe299
     name: vault
@@ -68,4 +68,4 @@ entries:
     urls:
     - https://anmys.github.io/helm-charts/vault-14.0.0.tgz
     version: 14.0.0
-generated: "2025-05-17T14:24:36.148666956Z"
+generated: "2025-05-17T14:44:42.974300932Z"
