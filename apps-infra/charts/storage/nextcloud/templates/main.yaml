@@ -52,6 +52,23 @@ spec:
       storage: {{ $sizePVC }}
   storageClassName: local-path
 ---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: nextcloud-headers
+  namespace: nextcloud
+spec:
+  headers:
+    customRequestHeaders:
+      X-Forwarded-Proto: "https"
+      X-Forwarded-For: "{remote_addr}"
+    customResponseHeaders:
+      Strict-Transport-Security: "max-age=15552000; includeSubDomains"
+      X-Content-Type-Options: "nosniff"
+      X-Frame-Options: "SAMEORIGIN"
+      X-XSS-Protection: "1; mode=block"
+      Referrer-Policy: "no-referrer-when-downgrade"
+---
 # # Configuración de la aplicación PostgreSQL en ArgoCD
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -68,11 +85,6 @@ spec:
       targetRevision: "6.2.2"
       helm:
         valuesObject:
-          # service:
-          #  type: LoadBalancer
-          #  port: 8080
-          #  loadBalancerIP: 192.168.1.2
-
           livenessProbe:
             enabled: false
           readinessProbe:
@@ -85,15 +97,8 @@ spec:
               nginx.ingress.kubernetes.io/affinity: cookie
               cert-manager.io/cluster-issuer: dmascotte-issuer
               traefik.ingress.kubernetes.io/router.tls: "true"
-              # Add secure headers
-              traefik.ingress.kubernetes.io/headers-customize-set-X-XSS-Protection: "1; mode=block"
-              traefik.ingress.kubernetes.io/headers-customize-set-Strict-Transport-Security: "max-age=15552000; includeSubDomains"
-              traefik.ingress.kubernetes.io/headers-customize-set-X-Content-Type-Options: "nosniff"
-              traefik.ingress.kubernetes.io/headers-customize-set-X-Frame-Options: "SAMEORIGIN"
-              traefik.ingress.kubernetes.io/headers-customize-set-Referrer-Policy: "no-referrer-when-downgrade"
-              # Add proxy headers for correct IP forwarding
-              traefik.ingress.kubernetes.io/headers-customize-set-X-Forwarded-Proto: "https"
-              traefik.ingress.kubernetes.io/headers-customize-set-X-Forwarded-For: "${remote_addr}"
+              # Use Traefik middlewares for security headers and HTTPS redirection
+              traefik.ingress.kubernetes.io/router.middlewares: traefik-secure-headers@kubernetescrd,traefik-redirect-https@kubernetescrd,nextcloud-nextcloud-headers@kubernetescrd
             hosts:
               - host: nextcloud.dmascotte.com
                 paths:
@@ -109,17 +114,19 @@ spec:
             # Force HTTPS
             forceSSL: true
             # Configure maintenance window
-            maintenanceWindow: "1:00"
+            maintenanceWindow: "01:00"
             # Define trusted proxies
             trustedProxies:
               - "10.0.0.0/8"
               - "172.16.0.0/12"
               - "192.168.0.0/16"
+              - "127.0.0.1"
+              - "traefik-traefik.traefik.svc.cluster.local"
             # Set default phone region
             defaultPhoneRegion: "CO"
-            # Configure mail server (update with your SMTP details)
+            # Configure mail server
             mail:
-              enabled: false
+              enabled: true
               fromAddress: nextcloud@dmascotte.com
               domain: dmascotte.com
               smtp:
@@ -146,6 +153,7 @@ spec:
                 echo "Running post-start commands...";
                 php occ maintenance:repair --include-expensive;
                 php occ db:add-missing-indices;
+                php occ db:convert-type --all-apps mysql nextcloud nextcloud nextcloud-db.nextcloud.svc.cluster.local;
           startupProbe:
             enabled: true
             initialDelaySeconds: 120
