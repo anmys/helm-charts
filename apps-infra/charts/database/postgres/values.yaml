@@ -3,3 +3,7 @@ enabled: false
 # create database nextcloud;
 # create user nextcloud with encrypted password 'nextcloud';
 # grant all privileges on database nextcloud to nextcloud;
+
+# create database supermavster;
+# create user supermavster with encrypted password 'supermavster';
+# grant all privileges on database supermavster to supermavster;
