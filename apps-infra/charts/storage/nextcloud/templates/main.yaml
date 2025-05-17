@@ -145,6 +145,7 @@ spec:
                   'redis' => array(
                     'host' => 'redis-app-master.redis.svc.cluster.local',
                     'port' => 6379,
+                    'password' => 'xoncxMvLeI',
                   ),
                 );
             # Disable default Redis config to avoid conflict
