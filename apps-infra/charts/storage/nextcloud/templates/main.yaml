@@ -85,6 +85,15 @@ spec:
               nginx.ingress.kubernetes.io/affinity: cookie
               cert-manager.io/cluster-issuer: dmascotte-issuer
               traefik.ingress.kubernetes.io/router.tls: "true"
+              # Add secure headers
+              traefik.ingress.kubernetes.io/headers-customize-set-X-XSS-Protection: "1; mode=block"
+              traefik.ingress.kubernetes.io/headers-customize-set-Strict-Transport-Security: "max-age=15552000; includeSubDomains"
+              traefik.ingress.kubernetes.io/headers-customize-set-X-Content-Type-Options: "nosniff"
+              traefik.ingress.kubernetes.io/headers-customize-set-X-Frame-Options: "SAMEORIGIN"
+              traefik.ingress.kubernetes.io/headers-customize-set-Referrer-Policy: "no-referrer-when-downgrade"
+              # Add proxy headers for correct IP forwarding
+              traefik.ingress.kubernetes.io/headers-customize-set-X-Forwarded-Proto: "https"
+              traefik.ingress.kubernetes.io/headers-customize-set-X-Forwarded-For: "${remote_addr}"
             hosts:
               - host: nextcloud.dmascotte.com
                 paths:
@@ -97,6 +106,46 @@ spec:
             host: nextcloud.dmascotte.com
             username: nextcloud
             password: nextcloud
+            # Force HTTPS
+            forceSSL: true
+            # Configure maintenance window
+            maintenanceWindow: "1:00"
+            # Define trusted proxies
+            trustedProxies:
+              - "10.0.0.0/8"
+              - "172.16.0.0/12"
+              - "192.168.0.0/16"
+            # Set default phone region
+            defaultPhoneRegion: "CO"
+            # Configure mail server (update with your SMTP details)
+            mail:
+              enabled: false
+              fromAddress: nextcloud@dmascotte.com
+              domain: dmascotte.com
+              smtp:
+                host: smtp.example.com
+                secure: ssl
+                port: 465
+                authtype: LOGIN
+                name: nextcloud-smtp-user
+                password: smtp-password
+            # Configure Redis for transactional locking
+            configs:
+              redis.config.php: |-
+                <?php
+                $CONFIG = array (
+                  'memcache.locking' => '\\OC\\Memcache\\Redis',
+                  'redis' => array(
+                    'host' => 'redis-master.redis.svc.cluster.local',
+                    'port' => 6379,
+                  ),
+                );
+            # Add post-install hooks to run maintenance commands
+            hooks:
+              postStartCommand: |-
+                echo "Running post-start commands...";
+                php occ maintenance:repair --include-expensive;
+                php occ db:add-missing-indices;
           startupProbe:
             enabled: true
             initialDelaySeconds: 120
