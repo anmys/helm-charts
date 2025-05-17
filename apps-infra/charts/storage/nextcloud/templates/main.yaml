@@ -98,7 +98,7 @@ spec:
               cert-manager.io/cluster-issuer: dmascotte-issuer
               traefik.ingress.kubernetes.io/router.tls: "true"
               # Use Traefik middlewares for security headers and HTTPS redirection
-              traefik.ingress.kubernetes.io/router.middlewares: traefik-secure-headers@kubernetescrd,traefik-redirect-https@kubernetescrd,nextcloud-nextcloud-headers@kubernetescrd
+              traefik.io/v1alpha1.middlewares: traefik-secure-headers@kubernetescrd,traefik-redirect-https@kubernetescrd,nextcloud-nextcloud-headers@kubernetescrd
             hosts:
               - host: nextcloud.dmascotte.com
                 paths:
