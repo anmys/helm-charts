@@ -10,7 +10,7 @@ redis:
   enabled: true
 
 nextcloud:
-  enabled: false
+  enabled: true
 
 adguard:
   enabled: true
