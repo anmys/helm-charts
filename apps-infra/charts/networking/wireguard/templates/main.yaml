@@ -102,11 +102,11 @@ spec:
             enabled: true
             existingClaim: data-wireguard
 
-        # Completely replace service configuration instead of merging
+        # Service configuration matching k8s-at-home format
         service:
           main:
             enabled: true
-            type: LoadBalancer
+            type: {{ .Values.service.main.type | default "LoadBalancer" }}
             loadBalancerIP: {{ .Values.service.main.loadBalancerIP | default "192.168.1.2" }}
             externalTrafficPolicy: {{ .Values.service.main.externalTrafficPolicy | default "Local" }}
             annotations:
@@ -114,13 +114,18 @@ spec:
               {{ $key }}: {{ $value | quote }}
               {{- end }}
             ports:
-              wireguard:
+              # Disable the HTTP port
+              http:
+                enabled: false
+              # Define only the VPN port to avoid duplicates
+              vpn:
                 enabled: true
                 port: 51820
                 protocol: UDP
                 targetPort: 51820
+                # Use a specific nodePort to avoid conflicts
                 nodePort: 31820
-          
+            
         resources:
           requests:
             memory: {{ .Values.resources.requests.memory | default "128Mi" }}

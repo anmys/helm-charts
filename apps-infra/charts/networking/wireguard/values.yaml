@@ -1,4 +1,4 @@
-enabled: false
+enabled: true
 
 # Namespace for the WireGuard deployment
 namespace: wireguard
@@ -12,8 +12,8 @@ argocd:
 
 # Image configuration
 image:
-  repository: linuxserver/wireguard
-  tag: latest
+  repository: ghcr.io/k8s-at-home/wireguard
+  tag: v1.0.20210424
   pullPolicy: IfNotPresent
 
 # Timezone configuration
@@ -25,13 +25,15 @@ controller:
 
 # Environment variables
 env:
-  PUID: 1000
-  PGID: 1000
-  SERVERURL: auto
-  PEERDNS: auto
-  INTERNAL_SUBNET: 10.13.13.0/24
-  ALLOWEDIPS: 0.0.0.0/0
-  # SERVER_PORT: 51820
+  TZ: UTC
+  PUID: "1000"
+  PGID: "1000"
+  SERVERURL: "auto"
+  PEERDNS: "auto"
+  INTERNAL_SUBNET: "10.13.13.0/24"
+  ALLOWEDIPS: "0.0.0.0/0"
+  IPTABLES_BACKEND: "nft"
+  # SERVER_PORT: "51820"
 
 # Persistence configuration
 persistence:
@@ -54,9 +56,10 @@ resources:
   limits:
     memory: 512Mi
 
-# Network configuration
+# Network configuration - matches k8s-at-home chart format
 service:
   main:
+    enabled: true
     type: LoadBalancer
     loadBalancerIP: 192.168.1.2
     externalTrafficPolicy: Local
@@ -64,7 +67,9 @@ service:
       metallb.universe.tf/address-pool: metallb-ip-pool
       metallb.universe.tf/allow-shared-ip: "metallb-ip-pool"
     ports:
-      wireguard:
+      http:
+        enabled: false
+      vpn:
         enabled: true
         port: 51820
         protocol: UDP
