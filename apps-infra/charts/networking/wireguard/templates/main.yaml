@@ -101,7 +101,7 @@ spec:
           config:
             enabled: true
             existingClaim: data-wireguard
-            mountPath: {{ .Values.config.mountPath | default "/config" }}
+            mountPath: {{ .Values.persistence.config.mountPath | default "/config" }}
 
         # Service configuration matching k8s-at-home format
         service:
