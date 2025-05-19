@@ -134,12 +134,24 @@ spec:
           limits:
             memory: {{ .Values.resources.limits.memory | default "512Mi" }}
         
+        # Security context - ensure container has required permissions
         securityContext:
           privileged: true
           capabilities:
             add:
               - NET_ADMIN
               - SYS_MODULE
+              - SYS_ADMIN  # Additional capability for system admin tasks
+              
+        # Allow host network access to fix DNS issues
+        hostNetwork: false
+        dnsPolicy: "ClusterFirstWithHostNet"
+        
+        # Pod-level security context for file permissions
+        podSecurityContext:
+          runAsUser: 0
+          runAsGroup: 0
+          fsGroup: 0
   
   syncPolicy:
     automated:
