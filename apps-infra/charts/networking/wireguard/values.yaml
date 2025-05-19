@@ -41,11 +41,10 @@ persistence:
   nodeAffinity: raspberrypi
   config:
     enabled: true
-    mountPath: /config
 
 # Ingress configuration
 ingress:
-  enabled: false
+  enabled: true
   class: traefik
   host: wireguard.dmascotte.com
   tls: true

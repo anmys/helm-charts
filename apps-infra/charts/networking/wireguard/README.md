@@ -1,90 +1,115 @@
 # WireGuard Helm Chart
 
-This Helm chart deploys WireGuard VPN, a fast, modern, and secure VPN tunnel, on a Kubernetes cluster.
+This Helm chart deploys a WireGuard VPN server on Kubernetes, using the linuxserver/wireguard container.
 
 ## Prerequisites
 
 - Kubernetes cluster
-- Helm
-- ArgoCD (for GitOps deployment)
-- A Raspberry Pi or other server with IP 192.168.1.2
-- MetalLB load balancer configured for the IP range
+- Helm 3
+- A persistent volume for storing WireGuard configuration
+
+## Installation
+
+```bash
+# From the helm-charts directory
+helm upgrade --install wireguard ./apps-infra/charts/networking/wireguard \
+  --namespace wireguard \
+  --create-namespace \
+  --set enabled=true
+```
 
 ## Configuration
 
-### Fixed IP Setup
+The main configuration is handled through the `values.yaml` file. Key configurations:
 
-This chart is configured to deploy WireGuard with a fixed IP address (192.168.1.2). The configuration includes:
+- `enabled`: Set to `true` to deploy the WireGuard server
+- `replicaCount`: Number of replicas (should be 1 for WireGuard)
+- `persistence.enabled`: Enable persistent storage
+- `persistence.size`: Size of the persistent volume claim
+- `service.type`: Service type (LoadBalancer, NodePort, etc.)
+- `service.port`: Port for the WireGuard service (default: 51820)
 
-- LoadBalancer service type to expose the service with a fixed IP
-- UDP port 51820 exposed for WireGuard connections
-- Persistent volume for configuration and connection data
+## Initial Setup
 
-### Deployment
+The chart includes initialization jobs that:
 
-To deploy this chart:
+1. Set up the required directories and permissions
+2. Create initial empty configurations
+3. Fix permissions for the WireGuard executables
 
-1. Enable the deployment by setting `enabled: true` in values.yaml
-2. Apply the changes using ArgoCD or direct Helm install:
+After installation, WireGuard will generate configuration files for the server and any defined peers.
+
+## Helper Script
+
+A helper script is included to assist with common WireGuard operations:
 
 ```bash
-# Using Helm directly
-helm install wireguard ./apps-infra/charts/networking/wireguard -n wireguard --create-namespace
+# Make the script executable if needed
+chmod +x ./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh
 
-# Using kubectl with ArgoCD
-kubectl apply -f apps-infra/charts/networking/wireguard/templates/main.yaml
+# Set the namespace if not using default
+export NAMESPACE=wireguard
+
+# Show status
+./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh status
+
+# Get logs
+./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh logs
+
+# Fix permissions (if needed)
+./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh fix-perms
+
+# Restart WireGuard
+./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh restart
+
+# Get QR code for a peer
+./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh qr peer1
 ```
-
-### Accessing WireGuard
-
-Once deployed, you can access WireGuard using client applications:
-
-- Server URL: 192.168.1.2
-- Port: 51820 (UDP)
-- Configuration files will be generated automatically, accessible from the persistent volume
-
-### Client Setup
-
-WireGuard clients are available for multiple platforms:
-
-1. Desktop: Windows, macOS, Linux
-2. Mobile: iOS, Android
-
-For each client, import the configuration file from the server to establish a connection.
-
-## Configuration Options
-
-The following table lists the configurable parameters and their default values.
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `enabled` | Enable the deployment | `false` |
-| `namespace` | Namespace for the deployment | `wireguard` |
-| `persistence.size` | Size of persistent volume | `1Gi` |
-| `persistence.nodeAffinity` | Node to deploy the volume to | `raspberrypi` |
-| `service.main.loadBalancerIP` | Fixed IP for the service | `192.168.1.2` |
-| `env.INTERNAL_SUBNET` | Internal subnet for VPN clients | `10.13.13.0/24` |
-| `env.ALLOWEDIPS` | Networks routed through VPN | `0.0.0.0/0` |
-
-## Security Considerations
-
-This deployment requires privileged mode due to the nature of VPN services. It specifically needs:
-
-- NET_ADMIN capability
-- SYS_MODULE capability
-- Privileged container execution
 
 ## Troubleshooting
 
-If WireGuard is not accessible after deployment:
+### Permission Denied Errors
 
-1. Check if the pod is running: `kubectl get pods -n wireguard`
-2. Check service status: `kubectl get svc -n wireguard`
-3. Check logs: `kubectl logs -n wireguard -l app.kubernetes.io/name=wireguard`
+If you see permission denied errors in the logs, you can run:
 
-## Upgrading
+```bash
+./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh fix-perms
+```
 
-To upgrade the chart:
+This will fix permissions on:
+- `/usr/bin/readlink`
+- `/usr/bin/wg`
+- `/usr/bin/wg-quick`
+- `/etc/wireguard` directory
+- `/config` directory
 
-1. Update the values in values.yaml
-2. Apply the changes using ArgoCD or Helm upgrade 
+### Network/DNS Issues
+
+The chart configures the WireGuard pod with:
+- `hostNetwork: true` for direct network access
+- `dnsPolicy: "ClusterFirstWithHostNet"` for enhanced DNS resolution
+- A default CoreDNS configuration that forwards to Google DNS (8.8.8.8, 8.8.4.4)
+
+### WireGuard Not Starting
+
+If WireGuard fails to start, check:
+
+1. Logs: `./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh logs`
+2. Permissions: Run the fix-perms command
+3. Restart the service: `./apps-infra/charts/networking/wireguard/scripts/wireguard-helper.sh restart`
+
+## Architecture
+
+This chart includes:
+
+1. **Main Deployment**: The WireGuard server container
+2. **Init Job**: Creates necessary directories and configurations
+3. **Post-Install Hook**: Fixes permissions after deployment
+4. **Service**: Exposes the WireGuard port
+5. **PVC**: Persistent volume for storing configurations
+
+## Notes
+
+- The WireGuard container runs as root (user 0) for necessary permissions
+- Additional capabilities (NET_ADMIN, SYS_MODULE, SYS_ADMIN) are granted for network management
+- The container has `hostNetwork: true` for direct network access 
