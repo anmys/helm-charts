@@ -47,3 +47,9 @@ dependencies:
     condition: adguard.enabled
     tags:
       - networking
+  - name: wireguard
+    version: 1.0.0
+    repository: https://anmys.github.io/helm-charts
+    condition: wireguard.enabled
+    tags:
+      - networking

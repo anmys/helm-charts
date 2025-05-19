@@ -1,0 +1,71 @@
+enabled: false
+
+# Namespace for the WireGuard deployment
+namespace: wireguard
+
+# ArgoCD configuration
+argocd:
+  project: default
+  destinationName: in-cluster
+  repoURL: https://k8s-at-home.com/charts/
+  targetRevision: 5.0.0
+
+# Image configuration
+image:
+  repository: linuxserver/wireguard
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Timezone configuration
+timezone: UTC
+
+# Controller configuration
+controller:
+  replicas: 1
+
+# Environment variables
+env:
+  PUID: 1000
+  PGID: 1000
+  SERVERURL: auto
+  PEERDNS: auto
+  INTERNAL_SUBNET: 10.13.13.0/24
+  ALLOWEDIPS: 0.0.0.0/0
+  # SERVER_PORT: 51820
+
+# Persistence configuration
+persistence:
+  size: 1Gi
+  nodeAffinity: raspberrypi
+
+# Ingress configuration
+ingress:
+  enabled: false
+  class: traefik
+  host: wireguard.dmascotte.com
+  tls: true
+  tlsSecretName: cert-manager-dmascotte-certificate
+
+# Resource constraints
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 512Mi
+
+# Network configuration
+service:
+  main:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
+    externalTrafficPolicy: Local
+    annotations:
+      metallb.universe.tf/address-pool: metallb-ip-pool
+      metallb.universe.tf/allow-shared-ip: "metallb-ip-pool"
+    ports:
+      wireguard:
+        enabled: true
+        port: 51820
+        protocol: UDP
+        targetPort: 51820 

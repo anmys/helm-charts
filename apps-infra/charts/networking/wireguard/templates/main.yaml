@@ -1,0 +1,127 @@
+{{- if .Values.enabled }}
+---
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace | default "wireguard" }}
+---
+# Persistent Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-wireguard
+  namespace: {{ .Values.namespace | default "wireguard" }}
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: {{ .Values.persistence.size | default "1Gi" }}
+  accessModes:
+    - ReadWriteMany
+  local:
+    fsType: ""
+    path: /mnt/ssd/app-data/wireguard
+  persistentVolumeReclaimPolicy: Retain
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+            - {{ .Values.persistence.nodeAffinity | default "raspberrypi" }}
+---
+# Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-wireguard
+  namespace: {{ .Values.namespace | default "wireguard" }}
+spec:
+  volumeName: pv-data-wireguard
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | default "1Gi" }}
+  storageClassName: local-path
+---
+# WireGuard Application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wireguard-app
+spec:
+  project: {{ .Values.argocd.project | default "default" }}
+  destination:
+    name: {{ .Values.argocd.destinationName | default "in-cluster" }}
+    namespace: {{ .Values.namespace | default "wireguard" }}
+  source:
+    repoURL: {{ .Values.argocd.repoURL | default "https://k8s-at-home.com/charts/" }}
+    chart: wireguard
+    targetRevision: {{ .Values.argocd.targetRevision | default "5.0.0" }}
+    helm:
+      valuesObject:
+        controller:
+          replicas: {{ .Values.controller.replicas | default "1" }}
+        image:
+          repository: {{ .Values.image.repository | default "linuxserver/wireguard" }}
+          tag: {{ .Values.image.tag | default "latest" }}
+          pullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        
+        env:
+          TZ: {{ .Values.timezone | default "UTC" }}
+          {{- if .Values.env }}
+          {{- range $key, $value := .Values.env }}
+          {{ $key }}: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+        
+        ingress:
+          main:
+            enabled: {{ .Values.ingress.enabled | default false }}
+            annotations:
+              kubernetes.io/ingress.class: {{ .Values.ingress.class | default "traefik" }}
+            hosts:
+              - host: {{ .Values.ingress.host | default "wireguard.local" }}
+                paths:
+                  - path: /
+                    pathType: Prefix
+            {{- if .Values.ingress.tls }}
+            tls:
+              - secretName: {{ .Values.ingress.tlsSecretName | default "wireguard-tls" }}
+                hosts:
+                  - {{ .Values.ingress.host | default "wireguard.local" }}
+            {{- end }}
+            
+        persistence:
+          config:
+            enabled: true
+            existingClaim: data-wireguard
+
+        {{- if .Values.service }}
+        service:
+          {{- toYaml .Values.service | nindent 10 }}
+        {{- end }}
+            
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory | default "128Mi" }}
+            cpu: {{ .Values.resources.requests.cpu | default "100m" }}
+          limits:
+            memory: {{ .Values.resources.limits.memory | default "512Mi" }}
+        
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - NET_ADMIN
+              - SYS_MODULE
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{ end }} 

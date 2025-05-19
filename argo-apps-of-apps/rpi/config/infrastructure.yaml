@@ -54,3 +54,35 @@ adguard:
     enabled: false
   ingress:
     enabled: true
+
+wireguard:
+  enabled: true
+  controller:
+    replicas: 1
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+  env:
+    PUID: 1000
+    PGID: 1000
+    SERVERURL: auto
+    PEERDNS: auto
+    INTERNAL_SUBNET: 10.13.13.0/24
+    ALLOWEDIPS: 0.0.0.0/0
+  service:
+   main:
+    type: LoadBalancer
+    loadBalancerIP: 192.168.1.2
+    externalTrafficPolicy: Local
+    annotations:
+      metallb.universe.tf/address-pool: metallb-ip-pool
+      metallb.universe.tf/allow-shared-ip: "metallb-ip-pool"
+    ports:
+      wireguard:
+        enabled: true
+        port: 51820
+        protocol: UDP
+        targetPort: 51820
