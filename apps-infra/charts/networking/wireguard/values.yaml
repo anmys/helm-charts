@@ -25,15 +25,15 @@ controller:
 
 # Environment variables
 env:
+  PUID: "0"
+  PGID: "0"
   TZ: UTC
-  PUID: "1000"
-  PGID: "1000"
   SERVERURL: "auto"
   PEERDNS: "auto"
   INTERNAL_SUBNET: "10.13.13.0/24"
   ALLOWEDIPS: "0.0.0.0/0"
-  PEERS: "3"  # Number of peer configurations to generate
-  LOG_CONFS: "true"  # Show QR codes in logs
+  PEERS: "3"
+  LOG_CONFS: "true"
 
 # Persistence configuration
 persistence:
@@ -85,19 +85,10 @@ securityContext:
     add:
       - NET_ADMIN
       - SYS_MODULE
+      - SYS_ADMIN
 
-# # WireGuard configuration
-# configSecret:
-#   enabled: true
-#   config: |
-#     [Interface]
-#     Address = 10.13.13.1/24
-#     ListenPort = 51820
-#     PrivateKey = REPLACE_WITH_YOUR_PRIVATE_KEY
-#     PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-#     PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
-
-#     # Example peer configuration - add your clients here
-#     #[Peer]
-#     #PublicKey = CLIENT_PUBLIC_KEY
-#     #AllowedIPs = 10.13.13.2/32 
+# Pod security context
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
