@@ -59,7 +59,7 @@ spec:
   source:
     repoURL: {{ .Values.argocd.repoURL | default "https://k8s-at-home.com/charts/" }}
     chart: wireguard
-    targetRevision: {{ .Values.argocd.targetRevision | default "5.0.0" }}
+    targetRevision: {{ .Values.argocd.targetRevision | default "1.4.2" }}
     helm:
       valuesObject:
         controller:
