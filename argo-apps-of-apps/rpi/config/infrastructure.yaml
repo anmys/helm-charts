@@ -56,7 +56,7 @@ adguard:
     enabled: true
 
 wireguard:
-  enabled: false
+  enabled: true
   # controller:
   #   replicas: 1
   # resources:
