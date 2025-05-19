@@ -102,11 +102,25 @@ spec:
             enabled: true
             existingClaim: data-wireguard
 
-        {{- if .Values.service }}
+        # Completely replace service configuration instead of merging
         service:
-          {{- toYaml .Values.service | nindent 10 }}
-        {{- end }}
-            
+          main:
+            enabled: true
+            type: LoadBalancer
+            loadBalancerIP: {{ .Values.service.main.loadBalancerIP | default "192.168.1.2" }}
+            externalTrafficPolicy: {{ .Values.service.main.externalTrafficPolicy | default "Local" }}
+            annotations:
+              {{- range $key, $value := .Values.service.main.annotations }}
+              {{ $key }}: {{ $value | quote }}
+              {{- end }}
+            ports:
+              wireguard:
+                enabled: true
+                port: 51820
+                protocol: UDP
+                targetPort: 51820
+                nodePort: 31820
+          
         resources:
           requests:
             memory: {{ .Values.resources.requests.memory | default "128Mi" }}
