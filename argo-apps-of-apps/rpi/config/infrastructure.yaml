@@ -1,19 +1,19 @@
 name: infrastructure
 
 vault:
-  enabled: true
+  enabled: false
   
 postgres:
-  enabled: true
+  enabled: false
 
 redis:
-  enabled: true
+  enabled: false
 
 nextcloud:
-  enabled: true
+  enabled: false
 
 adguard:
-  enabled: true
+  enabled: false
   controller:
     replicas: 1
   resources:
