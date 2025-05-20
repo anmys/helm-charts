@@ -1,9 +1,0 @@
-apiVersion: v2
-name: wireguard
-description: WireGuard VPN is an extremely simple yet fast and modern VPN server implementation
-type: application
-version: 1.0.0
-appVersion: "latest"
-maintainers:
-  - name: dmascotte
-    email: user@example.com 
