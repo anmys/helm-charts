@@ -3,7 +3,7 @@ entries:
   adguard:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-20T18:17:53.610496614Z"
+    created: "2025-05-20T18:27:27.972787674Z"
     description: adguard deployment app
     digest: 5f82c8b460feeb097c83e92e505c89f66e398f4375b76ddcdf940d66b5c56902
     name: adguard
@@ -13,7 +13,7 @@ entries:
     version: 14.0.0
   - apiVersion: v2
     appVersion: latest
-    created: "2025-05-20T18:17:53.610045504Z"
+    created: "2025-05-20T18:27:27.972332515Z"
     description: AdGuard Home is a network-wide software for blocking ads and tracking
     digest: 0f9d971b5f9a95fd4e2d49cf7bb633073a2450969de2452dbb9e1e6c35c91894
     maintainers:
@@ -27,7 +27,7 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-20T18:17:53.610666692Z"
+    created: "2025-05-20T18:27:27.972952091Z"
     description: nextcloud deployment app
     digest: f9914b1add97de07b31aa723b99415b6518cee18f1cbd908a643fbe7cab4b51c
     name: nextcloud
@@ -38,7 +38,7 @@ entries:
   postgres:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-20T18:17:53.610803276Z"
+    created: "2025-05-20T18:27:27.97309678Z"
     description: PostgreSQL database deploymenta
     digest: b9dc70d68921fb9ca0e2c63a06b65e14c8fad7d4252a96d2a194d1a34921957a
     name: postgres
@@ -49,7 +49,7 @@ entries:
   redis:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-20T18:17:53.610938498Z"
+    created: "2025-05-20T18:27:27.973223056Z"
     description: Redis database deploymenta
     digest: 178ec89bb220fb5231616fa42fa0b42789eef990b5edfe89fa9db47248d31d3d
     name: redis
@@ -60,9 +60,9 @@ entries:
   vault:
   - apiVersion: v2
     appVersion: "14.0"
-    created: "2025-05-20T18:17:53.611087997Z"
+    created: "2025-05-20T18:27:27.973389667Z"
     description: vault deployment app
-    digest: 96fda4dee34741f07ec611c45568cae26cd61548fe166e57aeb91e22e3a3fd01
+    digest: ee8fac9800519338f2abc33513ded5e292881156b683dca0502493549777a740
     name: vault
     type: application
     urls:
@@ -71,7 +71,7 @@ entries:
   wireguard:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-05-20T18:17:53.611497661Z"
+    created: "2025-05-20T18:27:27.973817284Z"
     description: WireGuard VPN is an extremely simple yet fast and modern VPN server
       implementation
     digest: 7d540fc6487c74d49c2f174959f316e888a1ae5ad564b4f93b73e6ef02ba9658
@@ -83,4 +83,4 @@ entries:
     urls:
     - https://anmys.github.io/helm-charts/wireguard-1.0.0.tgz
     version: 1.0.0
-generated: "2025-05-20T18:17:53.609618077Z"
+generated: "2025-05-20T18:27:27.971904286Z"
