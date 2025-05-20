@@ -1,7 +1,7 @@
 name: infrastructure
 
 vault:
-  enabled: false
+  enabled: true
   
 postgres:
   enabled: false
